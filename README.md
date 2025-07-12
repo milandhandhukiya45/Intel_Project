@@ -1,189 +1,220 @@
-# Root Cause Analysis in Multivariate Sensor Faults in Heavy Vehicles.
-   
+# Sensor Fault Detection Backend
 
-A comprehensive web application for detecting and analyzing faults in Scania truck air pressure systems using machine learning and real-time data visualization.
+This is the Flask backend for the Scania Truck Air Pressure System Fault Detection application. It provides RESTful APIs for anomaly detection, fault classification, and root cause analysis using machine learning techniques.
 
 ## Features
 
-- **Real-time Data Visualization**: Dynamic charts showing class distribution, feature correlations, and sensor behavior over time
-- **Anomaly Detection**: Z-Score based anomaly detection to identify unusual sensor readings
-- **Fault Classification**: Random Forest classifier to categorize different types of faults
-- **Root Cause Analysis**: Feature importance analysis to identify critical sensors
-- **Data Preprocessing**: Automatic handling of missing values and data cleaning
-- **Modern UI**: Responsive design with intuitive user interface
-
-## System Architecture
-
-### Backend (Python Flask)
-- **Data Processing**: Handles CSV file uploads with automatic preprocessing
-- **Machine Learning**: Implements anomaly detection and fault classification algorithms
-- **API Endpoints**: RESTful API for frontend communication
-- **Data Validation**: Robust error handling and data validation
-
-### Frontend (Vanilla JavaScript)
-- **Real-time Charts**: Chart.js integration for dynamic visualizations
-- **File Upload**: Drag-and-drop CSV file upload with validation
-- **Responsive Design**: Modern UI with Tailwind CSS styling
-- **Real Data Integration**: Fetches and displays actual data from backend APIs
-
-## Quick Start
-
-### 1. Start the Backend Server
-
-```bash
-cd backend
-pip install -r requirements.txt
-python app.py
-```
-
-The backend will start on `http://localhost:5000`
-
-### 2. Open the Frontend
-
-Simply open `index.html` in your web browser, or serve it using a local server:
-
-```bash
-# Using Python
-python -m http.server 8000
-
-# Using Node.js
-npx serve .
-
-# Using PHP
-php -S localhost:8000
-```
-
-Then visit `http://localhost:8000`
-
-### 3. Test the System
-
-1. **Upload Data**: Drag and drop a CSV file or click browse to select one
-2. **View Visualizations**: The charts will automatically update with real data
-3. **Run Analysis**: Click the analysis buttons to perform anomaly detection, classification, or root cause analysis
-4. **View Results**: Check the results tab for detailed analysis outcomes
-
-## Data Format
-
-The system expects CSV files with the following format:
-
-```csv
-aa_000,ab_001,ac_002,...,class
-2.1,2.3,1.9,...,Normal
-2.5,2.7,2.1,...,Fault Class 1
-...
-```
-
-- **Sensor Columns**: Numeric sensor readings (e.g., aa_000, ab_001, etc.)
-- **Class Column**: Target variable indicating fault status (Normal, Fault Class 1, etc.)
+- **Anomaly Detection**: Uses Z-Score method to detect sensor anomalies
+- **Fault Classification**: Implements Random Forest classifier for fault categorization
+- **Root Cause Analysis**: Identifies critical sensors using feature importance
+- **File Upload**: Handles CSV file uploads for sensor data
+- **RESTful API**: Provides clean API endpoints for frontend integration
 
 ## API Endpoints
 
-### Core Endpoints
-- `GET /api/health` - Health check
-- `POST /api/upload` - Upload CSV file
-- `POST /api/detect-anomalies` - Run anomaly detection
-- `POST /api/classify-faults` - Run fault classification
-- `POST /api/root-cause` - Run root cause analysis
+### Health Check
+- `GET /api/health` - Check if the API is running
 
-### Visualization Endpoints
-- `GET /api/visualization-data` - Get data for charts
-- `GET /api/sensor-time-series` - Get time series data
-- `GET /api/data-stats` - Get dataset statistics
+### File Operations
+- `POST /api/upload` - Upload CSV file with sensor data
+- `GET /api/data-stats` - Get statistics about uploaded data
 
-## Data Preprocessing
+### Analysis Operations
+- `POST /api/detect-anomalies` - Detect anomalies using Z-Score method
+- `POST /api/classify-faults` - Classify faults using Random Forest
+- `POST /api/root-cause` - Identify root cause sensors
 
-The system automatically handles:
-- Missing values (replaced with median)
-- Non-numeric data (converted or dropped)
-- Data type validation
-- Outlier detection
+## Setup Instructions
 
-## Machine Learning Models
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package installer)
 
-### Anomaly Detection
-- **Method**: Z-Score based detection
-- **Threshold**: 3.0 standard deviations
-- **Output**: Anomaly rate, critical/major/minor anomalies
+### Installation
 
-### Fault Classification
-- **Model**: Random Forest Classifier
-- **Features**: All sensor readings
-- **Target**: Fault class labels
-- **Metrics**: Accuracy, Precision, Recall, F1-Score
+1. **Navigate to the backend directory:**
+   ```bash
+   cd backend
+   ```
 
-### Root Cause Analysis
-- **Method**: Feature importance from Random Forest
-- **Output**: Ranked list of critical sensors
-- **Interpretation**: Percentage importance for each sensor
+2. **Create a virtual environment (recommended):**
+   ```bash
+   python -m venv venv
+   
+   # On Windows
+   venv\Scripts\activate
+   
+   # On macOS/Linux
+   source venv/bin/activate
+   ```
 
-## Testing
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Run the backend tests:
+4. **Generate sample data (optional):**
+   ```bash
+   python generate_sample_data.py
+   ```
 
-```bash
-cd backend
-python test_backend.py
+5. **Run the Flask application:**
+   ```bash
+   python app.py
+   ```
+
+The server will start on `http://localhost:5000`
+
+## Data Format
+
+The backend expects CSV files with the following format:
+
+- **Features**: Multiple sensor columns (e.g., `aa_000`, `ab_001`, `ac_002`, etc.)
+- **Target**: A `class` column with fault labels:
+  - `Normal` - Normal operation
+  - `Fault Class 1` - High pressure fault
+  - `Fault Class 2` - Low pressure fault
+  - `Fault Class 3` - Sensor malfunction
+
+### Example CSV Structure:
+```csv
+aa_000,ab_001,ac_002,ad_003,ae_004,af_005,ag_005,ag_006,ah_007,ai_008,aj_009,ak_010,al_011,am_012,an_013,ao_014,class
+2.3,2.4,2.1,2.5,2.2,2.3,20.5,2.2,25.0,23.0,2.4,2.1,2.3,2.5,2.2,2.3,Normal
+3.5,3.6,3.2,3.7,3.4,3.5,35.0,3.4,40.0,38.0,3.6,3.2,3.5,3.7,3.4,3.5,Fault Class 1
 ```
 
-This will test all API endpoints with sample data.
+## API Usage Examples
 
-## Sample Data Generation
-
-Generate sample data for testing:
-
+### 1. Upload File
 ```bash
-cd backend
-python generate_sample_data.py
+curl -X POST -F "file=@sample_sensor_data.csv" http://localhost:5000/api/upload
 ```
 
-This creates a CSV file with realistic sensor data and fault patterns.
+### 2. Detect Anomalies
+```bash
+curl -X POST http://localhost:5000/api/detect-anomalies
+```
 
-## Troubleshooting
+### 3. Classify Faults
+```bash
+curl -X POST http://localhost:5000/api/classify-faults
+```
 
-### Common Issues
+### 4. Root Cause Analysis
+```bash
+curl -X POST http://localhost:5000/api/root-cause
+```
 
-1. **"could not convert string to float: 'na'"**
-   - The system now handles missing values automatically
-   - Check your CSV file for proper formatting
+## Response Formats
 
-2. **Backend connection errors**
-   - Ensure the Flask server is running on port 5000
-   - Check for CORS issues in browser console
+### Anomaly Detection Response
+```json
+{
+  "type": "anomalies",
+  "data": {
+    "total_samples": 60000,
+    "anomalies": 4560,
+    "anomaly_rate": 7.6,
+    "critical_anomalies": 1230,
+    "major_anomalies": 2100,
+    "minor_anomalies": 1230
+  },
+  "timestamp": "2024-01-15T10:30:00"
+}
+```
 
-3. **Chart not updating**
-   - Refresh the page after uploading new data
-   - Check browser console for JavaScript errors
+### Classification Response
+```json
+{
+  "type": "classification",
+  "data": {
+    "accuracy": 94.2,
+    "precision": 91.8,
+    "recall": 89.5,
+    "f1_score": 90.6,
+    "classes": {
+      "Normal": 52340,
+      "Fault Class 1": 4560,
+      "Fault Class 2": 2100,
+      "Fault Class 3": 1000
+    }
+  },
+  "timestamp": "2024-01-15T10:30:00"
+}
+```
 
-### Data Requirements
+### Root Cause Response
+```json
+{
+  "type": "rootcause",
+  "data": {
+    "top_sensors": [
+      {
+        "name": "aa_000",
+        "importance": 0.156,
+        "description": "Air Pressure Sensor A"
+      }
+    ]
+  },
+  "timestamp": "2024-01-15T10:30:00"
+}
+```
 
-- CSV format required
-- Numeric sensor columns
-- Class column for supervised learning
-- Minimum 100 samples recommended
+## Configuration
 
-## Performance
+### Environment Variables
+You can configure the application using environment variables:
 
-- **Backend**: Handles datasets up to 100,000+ samples
-- **Frontend**: Real-time chart updates
-- **Memory**: Efficient data processing with pandas
-- **Speed**: Fast ML inference with scikit-learn
+- `FLASK_ENV`: Set to `development` for debug mode
+- `FLASK_PORT`: Port number (default: 5000)
+- `FLASK_HOST`: Host address (default: 0.0.0.0)
 
-## Contributing
+### Model Parameters
+The Random Forest model parameters can be adjusted in the `SensorFaultDetector` class:
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+- `n_estimators`: Number of trees (default: 100)
+- `max_depth`: Maximum depth of trees (default: 10)
+- `z_score_threshold`: Threshold for anomaly detection (default: 3.0)
+
+## Error Handling
+
+The API includes comprehensive error handling:
+
+- **400 Bad Request**: Invalid file format or missing data
+- **404 Not Found**: Requested resource not found
+- **500 Internal Server Error**: Server-side processing errors
+
+All error responses include a descriptive message:
+```json
+{
+  "error": "Error description"
+}
+```
+
+## Development
+
+### Running in Development Mode
+```bash
+export FLASK_ENV=development
+python app.py
+```
+
+### Running with Gunicorn (Production)
+```bash
+gunicorn -w 4 -b 0.0.0.0:5000 app:app
+```
+
+## Dependencies
+
+- **Flask**: Web framework
+- **Flask-CORS**: Cross-origin resource sharing
+- **pandas**: Data manipulation and analysis
+- **numpy**: Numerical computing
+- **scikit-learn**: Machine learning algorithms
+- **joblib**: Model persistence
+- **Werkzeug**: WSGI utilities
+- **gunicorn**: WSGI HTTP Server (production)
 
 ## License
 
-This project is licensed under the MIT License.
-
-## Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review the API documentation
-3. Test with sample data
-4. Open an issue on GitHub 
+This project is part of the Scania Truck Fault Detection System. 
